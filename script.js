@@ -2,6 +2,7 @@ let canvas = document.getElementById("snake");
 let context = canvas.getContext("2d");
 let box = 32;
 let snake =[];
+let pontos =0;
 
 snake[0]= {
     x: 8 *box,
@@ -9,6 +10,7 @@ snake[0]= {
 }
 
 let direction = " ";
+
 let food = {
     x: Math.floor(Math.random() * 15+1) * box,
     y: Math.floor(Math.random() * 15+1) * box
@@ -20,10 +22,23 @@ function criarBG() {
 }
 
 function criarCobrinha() {
+    
     for(let i = 0; i < snake.length; i++){
-        context.fillStyle = "blue";
+        if(i==0){
+            if(snake.length<=10){
+                context.fillStyle = "purple"; 
+            }else if(snake.length<=20){
+                context.fillStyle = "grey";
+            }else{
+                context.fillStyle = "green";
+            }    
+        }else{
+            context.fillStyle = "blue";
+        }
         context.fillRect(snake[i].x, snake[i].y, box, box);
+        
     }
+    
 }
 
 function drawFood() {
@@ -39,8 +54,19 @@ function update(event) {
     if(event.keyCode == 38 && direction != "down") direction = "up";
     if(event.keyCode == 39 && direction != "left") direction = "right";
     if(event.keyCode == 40 && direction != "up") direction = "down";
+   
+  
+}
+function gameOver(){
+    for(i = 1; i<snake.length; i++){
+        if(snake[0].x == snake[i].x && snake[0].y == snake[i].y){ 
+            clearInterval(jogo)
+            alert('game over!')
+        }
+    }
 
 }
+
 
 function iniciarJogo() {
     
@@ -50,17 +76,11 @@ function iniciarJogo() {
     if(snake[0].y > 15 * box && direction != "up") snake[0].y=0;
     if(snake[0].y < 0 && direction != "down") snake[0].y= 16 *box;
 
-
-    for(i = 1; i<snake.length; i++){
-        if(snake[0].x == snake[i].x && snake[0].y == snake[i].y){           
-            clearInterval(jogo);
-            alert('game over!')
-        }
-    }
-
+    gameOver();
     criarBG();
     criarCobrinha();
     drawFood();
+
     let snakeX = snake[0].x;
     let snakeY = snake[0].y;
 
@@ -68,21 +88,29 @@ function iniciarJogo() {
     if(direction == "left") snakeX -= box;
     if(direction == "up") snakeY -= box;
     if(direction == "down") snakeY += box;
-    
+
     if(snakeX != food.x || snakeY != food.y){
         snake.pop();
     }else{
         food.x =  Math.floor(Math.random() * 15+1) * box;
         food.y = Math.floor(Math.random() * 15+1) * box;
+        pontos++;
+        console.log(pontos)
     }
 
     
-
     let newHead = {
         x: snakeX, 
         y: snakeY
     }
+    
     snake.unshift(newHead);
+   
+let point = document.querySelector('.point')
+point.textContent = pontos;
+
+
 }
 
 let jogo = setInterval(iniciarJogo, 100);
+
